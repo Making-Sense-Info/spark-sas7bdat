@@ -11,15 +11,27 @@ A library for reading SAS data (.sas7bdat) with [Spark](http://spark.apache.org/
 
 ## Download:
 
-The latest jar can be downloaded from [spark-packages](http://spark-packages.org/package/saurfang/spark-sas7bdat).
+The library is available on Maven Central:
 
-Updated: 2025-12-02T14:06:04.539Z
+```scala
+// For sbt
+libraryDependencies += "io.github.saurfang" %% "spark-sas7bdat" % "3.0.0"
+```
 
-| Version      | Scala Version | Spark Version |
-| ------------ | ------------- | ------------- |
-| 3.0.0-s_2.11 | 2.11.x        | 2.4.x         |
-| 3.0.0-s_2.12 | 2.12.x        | 3.0.x         |
-| 3.0.0-s_2.13 | 2.13.x        | 3.5.x         |
+```xml
+<!-- For Maven -->
+<dependency>
+    <groupId>io.github.saurfang</groupId>
+    <artifactId>spark-sas7bdat_2.13</artifactId>
+    <version>3.0.0</version>
+</dependency>
+```
+
+| Scala Version | Spark Version | Artifact ID |
+| ------------- | ------------- | ----------- |
+| 2.11.x        | 2.4.x         | spark-sas7bdat_2.11 |
+| 2.12.x        | 3.0.x         | spark-sas7bdat_2.12 |
+| 2.13.x        | 3.5.x         | spark-sas7bdat_2.13 |
 
 ## Features:
 
@@ -131,7 +143,7 @@ cluster, you can always run it in local mode and take advantage of multi-core.
 ### Spark Shell
 
 ```bash
-spark-shell --master local[4] --packages saurfang:spark-sas7bdat:3.0.0-s_2.13
+spark-shell --master local[4] --packages io.github.saurfang:spark-sas7bdat_2.13:3.0.0
 ```
 
 ## Caveats

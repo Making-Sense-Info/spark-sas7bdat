@@ -1,7 +1,30 @@
+import xerial.sbt.Sonatype.sonatypeCentralHost
+
 name := "spark-sas7bdat"
 version := "3.0.0"
-organization := "com.github.saurfang"
+organization := "io.github.saurfang"
 licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
+
+// Maven Central publishing settings
+ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
+ThisBuild / publishTo := sonatypePublishToBundle.value
+ThisBuild / sonatypeProfileName := "io.github.saurfang"
+
+homepage := Some(url("https://github.com/saurfang/spark-sas7bdat"))
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/saurfang/spark-sas7bdat"),
+    "scm:git@github.com:saurfang/spark-sas7bdat.git"
+  )
+)
+developers := List(
+  Developer(
+    id = "saurfang",
+    name = "Forest Fang",
+    email = "saurfang@users.noreply.github.com",
+    url = url("https://github.com/saurfang")
+  )
+)
 
 scalaVersion := "2.13.12"
 crossScalaVersions := Seq("2.11.12", "2.12.11", "2.13.12")

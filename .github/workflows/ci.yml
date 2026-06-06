@@ -67,22 +67,19 @@ jobs:
             sbt-${{ runner.os }}-
 
       - name: Scalastyle
-        run: >
-          sbt -batch -no-colors -jvm-opts travis/jvmopts.test
-          ++${{ matrix.scala }} -Dspark.version=${{ matrix.spark }}
-          scalastyle
+        run: |
+          export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.test)"
+          sbt -batch ++${{ matrix.scala }} -Dspark.version=${{ matrix.spark }} scalastyle
 
       - name: Test
-        run: >
-          sbt -batch -no-colors -jvm-opts travis/jvmopts.test
-          ++${{ matrix.scala }} -Dspark.version=${{ matrix.spark }}
-          test
+        run: |
+          export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.test)"
+          sbt -batch ++${{ matrix.scala }} -Dspark.version=${{ matrix.spark }} test
 
       - name: Package
-        run: >
-          sbt -batch -no-colors -jvm-opts travis/jvmopts.compile
-          ++${{ matrix.scala }} -Dspark.version=${{ matrix.spark }}
-          package
+        run: |
+          export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.compile)"
+          sbt -batch ++${{ matrix.scala }} -Dspark.version=${{ matrix.spark }} package
 
       - name: Verify main JAR contains classes (Spark 4 line)
         if: matrix.spark == '4.1.2'

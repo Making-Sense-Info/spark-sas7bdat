@@ -84,8 +84,13 @@ jobs:
       - name: Verify main JAR contains classes (Spark 4 line)
         if: matrix.spark == '4.1.2'
         run: |
-          JAR="target/scala-${{ matrix.scala }}/spark-sas7bdat-4.0.0-s_${{ matrix.scala }}.jar"
-          test -f "$JAR"
+          # sbt uses scala *binary* version in paths (2.13), not full version (2.13.17)
+          JAR="target/scala-2.13/spark-sas7bdat-4.0.0-s_2.13.jar"
+          if [ ! -f "$JAR" ]; then
+            echo "Expected JAR not found: $JAR"
+            find target -name 'spark-sas7bdat*.jar' -type f 2>/dev/null || true
+            exit 1
+          fi
           jar tf "$JAR" | grep -q 'com/github/saurfang/sas/spark/DefaultSource.class'
           SIZE=$(stat -c%s "$JAR")
           if [ "$SIZE" -gt 500000 ]; then

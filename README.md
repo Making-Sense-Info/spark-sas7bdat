@@ -6,7 +6,8 @@ A library for reading SAS data (.sas7bdat) with [Spark](http://spark.apache.org/
 
 ## Requirements:
 
-- [Spark 2.4.x, 3.0.x, or 3.5.x](https://spark.apache.org/downloads.html) (see Scala/Spark version mapping below)
+- [Spark 2.4.x, 3.0.x, 3.5.x, or 4.1.x](https://spark.apache.org/downloads.html) (see Scala/Spark version mapping below)
+- Spark 4.x requires **Java 17+** and **Scala 2.13.17** (library version **4.0.0**, built/tested against **Spark 4.1.2**)
 - [Parso 2.0.14](https://mvnrepository.com/artifact/com.epam/parso/2.0.14)
 
 ## Download:
@@ -27,11 +28,14 @@ libraryDependencies += "io.github.saurfang" %% "spark-sas7bdat" % "3.0.0"
 </dependency>
 ```
 
-| Scala Version | Spark Version | Artifact ID |
-| ------------- | ------------- | ----------- |
-| 2.11.x        | 2.4.x         | spark-sas7bdat_2.11 |
-| 2.12.x        | 3.0.x         | spark-sas7bdat_2.12 |
-| 2.13.x        | 3.5.x         | spark-sas7bdat_2.13 |
+| Scala Version | Spark Version | Library version | Artifact ID |
+| ------------- | ------------- | --------------- | ----------- |
+| 2.11.x        | 2.4.x         | 3.0.0           | spark-sas7bdat_2.11 |
+| 2.12.x        | 3.0.x         | 3.0.0           | spark-sas7bdat_2.12 |
+| 2.13.x        | 3.5.x         | 3.0.0           | spark-sas7bdat_2.13 |
+| 2.13.17       | 4.1.2+        | **4.0.0**       | spark-sas7bdat_2.13 |
+
+Use **3.0.0** on Spark 3.5 clusters and **4.0.0** on Spark 4.1+ clusters (same artifact name, different library release). Build with `-Dspark.version=4.1.2` (or your cluster's 4.1.x patch version).
 
 ## Features:
 

@@ -16,9 +16,10 @@
 
 package com.github.saurfang.sas.parso
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ParsoWrapperSpec extends FlatSpec with Matchers {
+class ParsoWrapperSpec extends AnyFlatSpec with Matchers {
 
   "ParsoWrapper" should "create SasFileParserWrapper" in {
 

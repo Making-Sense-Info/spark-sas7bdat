@@ -28,7 +28,6 @@ import org.apache.hadoop.io.NullWritable
 import org.apache.hadoop.io.compress.CompressionCodecFactory
 import org.apache.log4j.LogManager
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.execution.datasources.CodecStreams
 import org.apache.spark.sql.{Row, SQLContext}
 import org.apache.spark.sql.sources.{BaseRelation, TableScan}
 import org.apache.spark.sql.types._
@@ -73,7 +72,7 @@ case class SasRelation protected[spark](
     metadataTimeout = metadataTimeout
   )
 
-  override def buildScan: RDD[Row] = {
+  override def buildScan(): RDD[Row] = {
 
     // Start from the hadoopConfiguration in sparkContext.
     val conf: Configuration = new Configuration(sqlContext.sparkContext.hadoopConfiguration)

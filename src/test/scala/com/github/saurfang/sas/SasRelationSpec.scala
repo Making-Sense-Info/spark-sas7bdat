@@ -18,18 +18,18 @@ package com.github.saurfang.sas
 
 import com.github.saurfang.sas.parso.ParsoWrapper
 import com.github.saurfang.sas.spark._
-import org.apache.spark.SharedSparkContext
+import org.apache.spark.{SharedSparkContext, TestSqlContext}
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.functions._
 import org.scalactic.TolerantNumerics.tolerantDoubleEquality
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class SasRelationSpec extends FlatSpec with Matchers with SharedSparkContext {
+class SasRelationSpec extends AnyFlatSpec with Matchers with SharedSparkContext {
 
   "SASRelation" should "read basic numeric SAS data exactly correct" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
     implicit val dblEquality = tolerantDoubleEquality(ParsoWrapper.EPSILON)
 
     // Set configs to cause multiple partitions/splits.
@@ -66,7 +66,7 @@ class SasRelationSpec extends FlatSpec with Matchers with SharedSparkContext {
 
   "SASRelation" should "export datetime SAS data to csv/parquet" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Get the path for our test file.
     val datetimeFilePath = getClass.getResource("/datetime.sas7bdat").getPath
@@ -87,7 +87,7 @@ class SasRelationSpec extends FlatSpec with Matchers with SharedSparkContext {
 
   "SASRelation" should "read internally compressed SAS data exactly correct" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Set configs to cause multiple partitions/splits.
     val conf = sqlContext.sparkContext.hadoopConfiguration
@@ -162,7 +162,7 @@ class SasRelationSpec extends FlatSpec with Matchers with SharedSparkContext {
 
   "SASRelation" should "read SAS files with formatted numeric columns as decimals/longs if inferDecimal and inferLong are enabled" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Get the path for our test files.
     val sasDataPath = getClass.getResource("/ag121a_supp_sample.sas7bdat").getPath
@@ -209,7 +209,7 @@ class SasRelationSpec extends FlatSpec with Matchers with SharedSparkContext {
 
   "SASRelation" should "read externally compressed numeric SAS data exactly correct" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
     implicit val dblEquality = tolerantDoubleEquality(ParsoWrapper.EPSILON)
 
     // Set configs to cause multiple partitions/splits.
@@ -245,7 +245,7 @@ class SasRelationSpec extends FlatSpec with Matchers with SharedSparkContext {
 
   "SASRelation" should "read externally splittable compressed numeric SAS data exactly correct" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
     implicit val dblEquality = tolerantDoubleEquality(ParsoWrapper.EPSILON)
 
     // Set configs to cause multiple partitions/splits.
@@ -282,7 +282,7 @@ class SasRelationSpec extends FlatSpec with Matchers with SharedSparkContext {
 
   "SASRelation" should "read externally compressed and internally compressed numeric SAS data exactly correct" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Set configs to cause multiple partitions/splits.
     val conf = sqlContext.sparkContext.hadoopConfiguration

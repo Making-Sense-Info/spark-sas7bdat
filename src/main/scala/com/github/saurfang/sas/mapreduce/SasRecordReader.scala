@@ -27,7 +27,6 @@ import org.apache.hadoop.io.NullWritable
 import org.apache.hadoop.mapreduce.{InputSplit, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.mapreduce.lib.input.FileSplit
 import org.apache.log4j.LogManager
-import org.apache.spark.sql.execution.datasources.CodecStreams
 
 /**
   * A [[RecordReader]] for [[SasInputFormat]].

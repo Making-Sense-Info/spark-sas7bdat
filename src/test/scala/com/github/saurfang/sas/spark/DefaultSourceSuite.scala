@@ -16,15 +16,15 @@
 
 package com.github.saurfang.sas.spark
 
-import org.apache.spark.SharedSparkContext
-import org.apache.spark.sql.SQLContext
-import org.scalatest.{FunSuite, Matchers}
+import org.apache.spark.{SharedSparkContext, TestSqlContext}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class DefaultSourceSuite extends FunSuite with Matchers with SharedSparkContext {
+class DefaultSourceSuite extends AnyFunSuite with Matchers with SharedSparkContext {
 
   test("Data loaded via Implicit SQLContext should be the same as that from SQL Statements.") {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Get the path for our test file.
     val sasDatetimePath = getClass.getResource("/datetime.sas7bdat").getPath
@@ -47,7 +47,7 @@ class DefaultSourceSuite extends FunSuite with Matchers with SharedSparkContext 
 
   test("Data loaded via Implicit SQLContext should be the same as that from default source specification.") {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Get the path for our test file.
     val sasDatetimePath = getClass.getResource("/datetime.sas7bdat").getPath
@@ -64,7 +64,7 @@ class DefaultSourceSuite extends FunSuite with Matchers with SharedSparkContext 
 
   test("Data loaded via Implicit DataFrameReader should be the same as that from default source specification.") {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Get the path for our test file.
     val sasDatetimePath = getClass.getResource("/datetime.sas7bdat").getPath

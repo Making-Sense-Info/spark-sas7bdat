@@ -1,7 +1,6 @@
 import xerial.sbt.Sonatype.sonatypeCentralHost
 
 name := "spark-sas7bdat"
-version := "3.0.0"
 organization := "io.github.saurfang"
 licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
@@ -26,41 +25,43 @@ developers := List(
   )
 )
 
-scalaVersion := "2.13.12"
-crossScalaVersions := Seq("2.11.12", "2.12.11", "2.13.12")
-
-lazy val sparkVersionValue = Def.setting[String] {
-  sys.props.getOrElse("spark.version", scalaBinaryVersion.value match {
-    case "2.11" => "2.4.6"
-    case "2.12" => "3.0.0"
-    case "2.13" => "3.5.0"
-  })
-}
-
-scalacOptions ++= Seq("-target:jvm-1.8")
-javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
-
-libraryDependencies ++= Seq(
-  // spark
-  "org.apache.spark" %% "spark-core" % sparkVersionValue.value % "provided",
-  "org.apache.spark" %% "spark-sql" % sparkVersionValue.value % "provided",
-
-  // main
-  "com.epam" % "parso" % "2.0.14",
-  "org.apache.logging.log4j" %% "log4j-api-scala" % "12.0",
-
-  // testing
-  "org.scalatest" %% "scalatest" % "3.1.2" % "test",
+scalaVersion := SparkVersions.Scala213Legacy
+crossScalaVersions := Seq(
+  SparkVersions.Scala211,
+  SparkVersions.Scala212,
+  SparkVersions.Scala213Legacy,
+  SparkVersions.Scala213Spark4
 )
 
-//include provided dependencies in sbt run task
-run in Compile := Defaults.runTask(fullClasspath in Compile, mainClass in(Compile, run), runner in(Compile, run))
+lazy val sparkVersion = Def.setting {
+  SparkVersions.resolveSparkVersion(
+    scalaBinaryVersion.value,
+    sys.props.get("spark.version")
+  )
+}
 
-//only one living spark-context is allowed
-parallelExecution in Test := false
+lazy val spark4Build = Def.setting {
+  SparkVersions.isSpark4(sparkVersion.value)
+}
 
-//set java options for consistent timestamp test
-javaOptions in Test ++= {
+version := SparkVersions.libraryVersion(sparkVersion.value)
+
+scalacOptions ++= {
+  if (spark4Build.value) Seq("-release:17")
+  else Seq("-target:jvm-1.8")
+}
+
+javacOptions ++= {
+  val v = if (spark4Build.value) "17" else "1.8"
+  Seq(s"-source", v, s"-target", v, "-Xlint:-options")
+}
+
+Compile / run := Defaults.runTask(Compile / fullClasspath, Compile / mainClass, Compile / run / runner)
+
+Test / parallelExecution := false
+Test / fork := true
+
+Test / javaOptions ++= {
   val common = Seq("-Duser.timezone=UTC")
   val moduleArgs =
     if (sys.props.get("java.specification.version").exists(_.split("\\.").headOption.exists(_.toInt >= 9))) {
@@ -77,16 +78,45 @@ javaOptions in Test ++= {
     }
   common ++ moduleArgs
 }
-fork in Test := true
 
-//skip test during assembly
-test in assembly := {}
-assemblyJarName in assembly := s"${name.value}-${version.value}-s_${scalaBinaryVersion.value}.jar"
-artifactName := { (sv: ScalaVersion, module: ModuleID, art: Artifact) =>
-  s"${name.value}-${module.revision}-s_${sv.binary}.${art.extension}"
+libraryDependencies ++= {
+  val scalaBin = scalaBinaryVersion.value
+  val scalatestVersion = if (scalaBin == "2.11") "3.1.2" else "3.2.19"
+  val log4jApiScalaVersion = if (scalaBin == "2.11") "12.0" else "13.1.0"
+  Seq(
+    "org.apache.spark" %% "spark-core" % sparkVersion.value % Provided,
+    "org.apache.spark" %% "spark-sql" % sparkVersion.value % Provided,
+    "com.epam" % "parso" % "2.0.14",
+    "org.apache.logging.log4j" %% "log4j-api-scala" % log4jApiScalaVersion,
+    "org.scalatest" %% "scalatest" % scalatestVersion % Test
+  )
 }
-assemblyMergeStrategy in assembly := {
+
+// sbt -Dspark.version=4.1.2 spark41Compile  (requires JDK 17+)
+addCommandAlias(
+  "spark41Compile",
+  s"++${SparkVersions.Scala213Spark4} compile"
+)
+addCommandAlias(
+  "spark41Test",
+  s"++${SparkVersions.Scala213Spark4} test"
+)
+
+assembly / test := {}
+assembly / assemblyJarName := s"${name.value}-${version.value}-s_${scalaBinaryVersion.value}.jar"
+assembly / assemblyMergeStrategy := {
   case PathList("META-INF", "versions", _ @ _*) => MergeStrategy.first
-  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-  case x => (assemblyMergeStrategy in assembly).value(x)
+  case PathList("META-INF", "MANIFEST.MF")    => MergeStrategy.discard
+  case x                                       => (assembly / assemblyMergeStrategy).value(x)
 }
+
+artifactName := { (sv: ScalaVersion, module: ModuleID, art: Artifact) =>
+  val base = s"${name.value}-${module.revision}-s_${sv.binary}"
+  art.classifier match {
+    case Some(classifier) => s"$base-$classifier.${art.extension}"
+    case None             => s"$base.${art.extension}"
+  }
+}
+
+publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
+publishConfiguration := publishConfiguration.value.withOverwrite(true)

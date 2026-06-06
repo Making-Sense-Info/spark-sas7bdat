@@ -40,6 +40,12 @@ matrix:
         - 2.13.12
       jdk:
         - openjdk11
+    - name: Spark 4.1.2 (Java 17)
+      env: SPARK_VERSION=4.1.2
+      scala:
+        - 2.13.17
+      jdk:
+        - openjdk17
 script:
   - sbt -jvm-opts travis/jvmopts.test    ++$TRAVIS_SCALA_VERSION -Dspark.version=$SPARK_VERSION scalastyle
   - sbt -jvm-opts travis/jvmopts.test    ++$TRAVIS_SCALA_VERSION -Dspark.version=$SPARK_VERSION test

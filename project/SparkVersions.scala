@@ -4,7 +4,7 @@
  * Legacy line (library 3.0.0): Spark 2.4 / 3.0 / 3.5 — Java 8 bytecode.
  * Spark 4 line (library 4.0.0): Spark 4.1+ on Scala 2.13.17 — Java 17 bytecode.
  *
- * Build Spark 4: sbt ++2.13.17 -Dspark.version=4.1.2 compile
+ * Build Spark 4: sbt -Dspark.version=4.1.2 ++2.13.17 compile
  */
 object SparkVersions {
 

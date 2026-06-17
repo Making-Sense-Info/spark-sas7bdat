@@ -103,11 +103,15 @@ addCommandAlias(
 )
 
 assembly / test := {}
-assembly / assemblyJarName := s"${name.value}-${version.value}-s_${scalaBinaryVersion.value}.jar"
+// Fat JAR for PySpark / spark-submit --jars (includes Parso; Spark remains Provided).
+// Thin JAR from `package` / Maven publish keeps the default name without -assembly.
+assembly / assemblyJarName :=
+  s"${name.value}-${version.value}-s_${scalaBinaryVersion.value}-assembly.jar"
 assembly / assemblyMergeStrategy := {
+  case PathList("module-info.class")              => MergeStrategy.discard
   case PathList("META-INF", "versions", _ @ _*) => MergeStrategy.first
-  case PathList("META-INF", "MANIFEST.MF")    => MergeStrategy.discard
-  case x                                       => (assembly / assemblyMergeStrategy).value(x)
+  case PathList("META-INF", "MANIFEST.MF")       => MergeStrategy.discard
+  case x                                          => (assembly / assemblyMergeStrategy).value(x)
 }
 
 artifactName := { (sv: ScalaVersion, module: ModuleID, art: Artifact) =>

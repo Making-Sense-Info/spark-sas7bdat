@@ -37,6 +37,37 @@ libraryDependencies += "io.github.saurfang" %% "spark-sas7bdat" % "3.0.0"
 
 Use **3.0.0** on Spark 3.5 clusters and **4.0.0** on Spark 4.1+ clusters (same artifact name, different library release). Build with `-Dspark.version=4.1.2` (or your cluster's 4.1.x patch version).
 
+### Build JARs from source (thin vs fat)
+
+Two artifacts — pick the one that matches how you run Spark:
+
+| Artifact | Command | Output | Use when |
+|----------|---------|--------|----------|
+| **Thin** | `package` | `spark-sas7bdat-*-s_2.13.jar` (~50 KB) | Maven / sbt (`publishM2`), `--packages` (Parso via POM) |
+| **Fat** | `assembly` | `spark-sas7bdat-*-s_2.13-assembly.jar` (~6 MB) | PySpark, `spark-submit --jars` (Parso bundled) |
+
+Spark (`spark-core`, `spark-sql`) is not included in either JAR.
+
+**Spark 4.1.x** (library **4.0.0**):
+
+```bash
+# Thin JAR (Maven / publishM2)
+sbt -Dspark.version=4.1.2 ++2.13.17 package
+
+# Fat JAR (PySpark / --jars)
+sbt -Dspark.version=4.1.2 ++2.13.17 assembly
+# → target/scala-2.13/spark-sas7bdat-4.0.0-s_2.13-assembly.jar
+```
+
+**Legacy line** (library **3.0.0**, e.g. Spark 3.5):
+
+```bash
+sbt ++2.13.12 package      # thin
+sbt ++2.13.12 assembly     # fat
+```
+
+CI runs `package` (thin JAR) only — no `assembly`.
+
 ## Features:
 
 - This package allows reading SAS files from local and distributed filesystems, into Spark DataFrames.

@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,10 +15,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas
+package info.makingsense.sas
 
-import com.github.saurfang.sas.parso.ParsoWrapper
-import com.github.saurfang.sas.spark._
+import info.makingsense.sas.parso.ParsoWrapper
+import info.makingsense.sas.spark._
 import org.apache.spark.{SharedSparkContext, TestSqlContext}
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions._
@@ -183,7 +184,7 @@ class SasRelationSpec extends AnyFlatSpec with Matchers with SharedSparkContext 
     // Read files
     val sasDataDF = {
       sqlContext.read
-        .format("com.github.saurfang.sas.spark")
+        .format("info.makingsense.sas.spark")
         .option("inferDecimal", true)
         .option("inferLong", true)
         .load(sasDataPath)

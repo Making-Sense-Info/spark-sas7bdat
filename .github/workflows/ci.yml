@@ -91,7 +91,7 @@ jobs:
             find target -name 'spark-sas7bdat*.jar' -type f 2>/dev/null || true
             exit 1
           fi
-          jar tf "$JAR" | grep -q 'com/github/saurfang/sas/spark/DefaultSource.class'
+          jar tf "$JAR" | grep -q 'info/makingsense/sas/spark/DefaultSource.class'
           SIZE=$(stat -c%s "$JAR")
           if [ "$SIZE" -gt 500000 ]; then
             echo "JAR looks too large ($SIZE bytes) — may be javadoc instead of classes"

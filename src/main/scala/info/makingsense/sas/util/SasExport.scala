@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,7 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas.util
+package info.makingsense.sas.util
 
 import org.apache.log4j.LogManager
 import org.apache.spark.sql.SparkSession
@@ -31,7 +32,7 @@ object SasExport {
     log.info(args.mkString(" "))
 
     val spark = SparkSession.builder.appName("Spark sas7bdat").getOrCreate()
-    val df = spark.read.format("com.github.saurfang.sas.spark").load(args(0))
+    val df = spark.read.format("info.makingsense.sas.spark").load(args(0))
 
     val output = args(1)
     if (output.endsWith(".csv")) {

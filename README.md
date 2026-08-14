@@ -2,7 +2,9 @@
 
 A library for reading SAS data (.sas7bdat) with [Spark](http://spark.apache.org/).
 
-[![Build Status](https://travis-ci.org/saurfang/spark-sas7bdat.svg?branch=master)](https://travis-ci.org/saurfang/spark-sas7bdat) [![Join the chat at https://gitter.im/saurfang/spark-sas7bdat](https://badges.gitter.im/saurfang/spark-sas7bdat.svg)](https://gitter.im/saurfang/spark-sas7bdat?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+This is a **Making Sense** fork of [saurfang/spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat), with Spark **4.1.x** support.
+
+[![CI](https://github.com/Making-Sense-Info/spark-sas7bdat/actions/workflows/ci.yml/badge.svg)](https://github.com/Making-Sense-Info/spark-sas7bdat/actions/workflows/ci.yml)
 
 ## Requirements:
 
@@ -12,19 +14,19 @@ A library for reading SAS data (.sas7bdat) with [Spark](http://spark.apache.org/
 
 ## Download:
 
-The library is available on Maven Central:
+Maven coordinates for this fork (`groupId` **info.makingsense**). Spark data source format: **`info.makingsense.sas.spark`**.
 
 ```scala
-// For sbt
-libraryDependencies += "io.github.saurfang" %% "spark-sas7bdat" % "3.0.0"
+// For sbt — Spark 4.1.x
+libraryDependencies += "info.makingsense" %% "spark-sas7bdat" % "4.0.0"
 ```
 
 ```xml
-<!-- For Maven -->
+<!-- For Maven — Spark 4.1.x -->
 <dependency>
-    <groupId>io.github.saurfang</groupId>
+    <groupId>info.makingsense</groupId>
     <artifactId>spark-sas7bdat_2.13</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 
@@ -36,6 +38,8 @@ libraryDependencies += "io.github.saurfang" %% "spark-sas7bdat" % "3.0.0"
 | 2.13.17       | 4.1.2+        | **4.0.0**       | spark-sas7bdat_2.13 |
 
 Use **3.0.0** on Spark 3.5 clusters and **4.0.0** on Spark 4.1+ clusters (same artifact name, different library release). Build with `-Dspark.version=4.1.2` (or your cluster's 4.1.x patch version).
+
+Until **4.0.0** is on Maven Central, build from source (`package` / `publishM2`): **[docs/standalone-build.md](docs/standalone-build.md)**. Publishing to Central: **[docs/publish-maven.md](docs/publish-maven.md)**.
 
 ### Build JARs from source (thin vs fat)
 
@@ -115,7 +119,7 @@ CI runs `package` (thin JAR) only — no `assembly`.
 ```scala
 val df = {
   spark.read
-    .format("com.github.saurfang.sas.spark")
+    .format("info.makingsense.sas.spark")
     .option("forceLowercaseNames", true)
     .option("inferLong", true)
     .load("cars.sas7bdat")
@@ -126,7 +130,7 @@ df.write.format("csv").option("header", "true").save("newcars.csv")
 You can also use the implicit readers:
 
 ```scala
-import com.github.saurfang.sas.spark._
+import info.makingsense.sas.spark._
 
 // DataFrameReader
 val df = spark.read.sas("cars.sas7bdat")
@@ -142,14 +146,14 @@ df2.write.format("csv").option("header", "true").save("newcars.csv")
 ### Python API
 
 ```python
-df = spark.read.format("com.github.saurfang.sas.spark").load("cars.sas7bdat", forceLowercaseNames=True, inferLong=True)
+df = spark.read.format("info.makingsense.sas.spark").load("cars.sas7bdat", forceLowercaseNames=True, inferLong=True)
 df.write.csv("newcars.csv", header=True)
 ```
 
 ### R API
 
 ```r
-df <- read.df("cars.sas7bdat", source = "com.github.saurfang.sas.spark", forceLowercaseNames = TRUE, inferLong = TRUE)
+df <- read.df("cars.sas7bdat", source = "info.makingsense.sas.spark", forceLowercaseNames = TRUE, inferLong = TRUE)
 write.df(df, path = "newcars.csv", source = "csv", header = TRUE)
 ```
 
@@ -159,7 +163,7 @@ SAS data can be queried in pure SQL by registering the data as a (temporary) tab
 
 ```sql
 CREATE TEMPORARY VIEW cars
-USING com.github.saurfang.sas.spark
+USING info.makingsense.sas.spark
 OPTIONS (path="cars.sas7bdat")
 ```
 
@@ -178,7 +182,7 @@ cluster, you can always run it in local mode and take advantage of multi-core.
 ### Spark Shell
 
 ```bash
-spark-shell --master local[4] --packages io.github.saurfang:spark-sas7bdat_2.13:3.0.0
+spark-shell --master local[4] --packages info.makingsense:spark-sas7bdat_2.13:4.0.0
 ```
 
 ## Caveats
@@ -193,7 +197,8 @@ spark-shell --master local[4] --packages io.github.saurfang:spark-sas7bdat_2.13:
 - [sas7bdat format](http://www2.uaem.mx/r-mirror/web/packages/sas7bdat/vignettes/sas7bdat.pdf)
 - [ReadStat](https://github.com/WizardMac/ReadStat)
 
-## Acknowledgements
+## Attribution
 
-This project would not be possible without [parso](https://github.com/epam/parso/) continued improvements and generous contributions from @mulya, @thesuperzapper, and many others. We are hornored to be a recipient of [2020 WiseWithData ELEVATE Awards](https://www.wisewithdata.com/2020/09/elevate-humanitarian-oss-award-winners/) and appreciate their generous donations.
+This project is a derivative work of [spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat) by Forest Fang, licensed under the [Apache License 2.0](LICENSE). Original copyright notices are retained in the source files.
+
 

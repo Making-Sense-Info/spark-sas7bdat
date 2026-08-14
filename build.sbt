@@ -1,27 +1,28 @@
 import xerial.sbt.Sonatype.sonatypeCentralHost
 
 name := "spark-sas7bdat"
-organization := "io.github.saurfang"
+organization := "info.makingsense"
+description := "Spark data source for reading SAS sas7bdat files"
 licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
-// Maven Central publishing settings
+// Maven Central (Central Portal) publishing settings
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 ThisBuild / publishTo := sonatypePublishToBundle.value
-ThisBuild / sonatypeProfileName := "io.github.saurfang"
+ThisBuild / sonatypeProfileName := "info.makingsense"
 
-homepage := Some(url("https://github.com/saurfang/spark-sas7bdat"))
+homepage := Some(url("https://github.com/Making-Sense-Info/spark-sas7bdat"))
 scmInfo := Some(
   ScmInfo(
-    url("https://github.com/saurfang/spark-sas7bdat"),
-    "scm:git@github.com:saurfang/spark-sas7bdat.git"
+    url("https://github.com/Making-Sense-Info/spark-sas7bdat"),
+    "scm:git@github.com:Making-Sense-Info/spark-sas7bdat.git"
   )
 )
 developers := List(
   Developer(
-    id = "saurfang",
-    name = "Forest Fang",
-    email = "saurfang@users.noreply.github.com",
-    url = url("https://github.com/saurfang")
+    id = "Making-Sense-Info",
+    name = "Making Sense",
+    email = "",
+    url = url("https://github.com/Making-Sense-Info")
   )
 )
 
@@ -124,3 +125,10 @@ artifactName := { (sv: ScalaVersion, module: ModuleID, art: Artifact) =>
 
 publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
 publishConfiguration := publishConfiguration.value.withOverwrite(true)
+pomIncludeRepository := { _ => false }
+publishMavenStyle := true
+
+Compile / packageBin / mappings ++= Seq(
+  file("LICENSE") -> "LICENSE",
+  file("NOTICE") -> "NOTICE"
+)

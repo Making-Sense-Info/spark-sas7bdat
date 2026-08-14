@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,7 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas.spark
+package info.makingsense.sas.spark
 
 import org.apache.spark.{SharedSparkContext, TestSqlContext}
 import org.scalatest.funsuite.AnyFunSuite
@@ -36,7 +37,7 @@ class DefaultSourceSuite extends AnyFunSuite with Matchers with SharedSparkConte
     sqlContext.sql(
       s"""
          |CREATE TEMPORARY VIEW datetimeTable
-         |USING com.github.saurfang.sas.spark
+         |USING info.makingsense.sas.spark
          |OPTIONS (path="$sasDatetimePath")
       """.stripMargin)
     val sqlDF = sqlContext.sql("SELECT * FROM datetimeTable")
@@ -56,7 +57,7 @@ class DefaultSourceSuite extends AnyFunSuite with Matchers with SharedSparkConte
     val implicitDF = sqlContext.sasFile(sasDatetimePath)
 
     // Read using default source.
-    val directDF = sqlContext.read.format("com.github.saurfang.sas.spark").load(sasDatetimePath)
+    val directDF = sqlContext.read.format("info.makingsense.sas.spark").load(sasDatetimePath)
 
     // Ensure they return the same data.
     implicitDF.collect() should ===(directDF.collect())
@@ -73,7 +74,7 @@ class DefaultSourceSuite extends AnyFunSuite with Matchers with SharedSparkConte
     val implicitDF = sqlContext.read.sas(sasDatetimePath)
 
     // Read using default source.
-    val directDF = sqlContext.read.format("com.github.saurfang.sas.spark").load(sasDatetimePath)
+    val directDF = sqlContext.read.format("info.makingsense.sas.spark").load(sasDatetimePath)
 
     // Ensure they return the same data.
     implicitDF.collect() should ===(directDF.collect())

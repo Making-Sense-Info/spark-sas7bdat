@@ -1,5 +1,6 @@
 ## 4.0.0
 
+- **Fork**: published by Making Sense as `info.makingsense:spark-sas7bdat_2.13:4.0.0`. Spark format is now `info.makingsense.sas.spark`.
 - **Added**: Spark 4.1.x support on Scala 2.13.17 (Java 17 bytecode), built and tested against Spark **4.1.2**. Legacy Spark 2.4 / 3.0 / 3.5 line remains at library version 3.0.0.
 - **Changed**: log4j-api-scala 13.1.0 (Scala 2.12+), scalatest 3.2.19 (Scala 2.12+).
 - **Fixed**: `assembly` fat JAR (`-assembly.jar` suffix) bundles Parso for PySpark / `--jars`; `module-info.class` merge for sbt-assembly.

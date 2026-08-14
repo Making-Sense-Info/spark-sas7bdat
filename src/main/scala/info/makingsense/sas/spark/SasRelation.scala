@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,14 +15,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas.spark
+package info.makingsense.sas.spark
 
 import java.io.IOException
 
 import com.epam.parso.ColumnFormat
 import com.epam.parso.impl.SasFileReaderImpl
-import com.github.saurfang.sas.mapreduce.SasInputFormat
-import com.github.saurfang.sas.parso.ParsoWrapper
+import info.makingsense.sas.mapreduce.SasInputFormat
+import info.makingsense.sas.parso.ParsoWrapper
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.NullWritable

@@ -128,6 +128,21 @@ publishConfiguration := publishConfiguration.value.withOverwrite(true)
 pomIncludeRepository := { _ => false }
 publishMavenStyle := true
 
+// CI / local: SONATYPE_USERNAME + SONATYPE_PASSWORD (Central Portal token).
+credentials ++= {
+  for {
+    user <- sys.env.get("SONATYPE_USERNAME").filter(_.nonEmpty)
+    pass <- sys.env.get("SONATYPE_PASSWORD").filter(_.nonEmpty)
+  } yield Credentials(
+    "Sonatype Nexus Repository Manager",
+    sonatypeCredentialHost.value,
+    user,
+    pass
+  )
+}.toSeq
+
+pgpPassphrase := sys.env.get("PGP_PASSPHRASE").filter(_.nonEmpty).map(_.toCharArray)
+
 Compile / packageBin / mappings ++= Seq(
   file("LICENSE") -> "LICENSE",
   file("NOTICE") -> "NOTICE"

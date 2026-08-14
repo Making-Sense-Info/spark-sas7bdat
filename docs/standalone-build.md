@@ -1,8 +1,8 @@
 # Standalone build and local Maven install
 
-Build **spark-sas7bdat 4.0.0** (Spark **4.1.x**) from source and install into `~/.m2`.
+Build **spark-sas7bdat** Spark **4.1.x** from source and install into `~/.m2`.
 
-Maven coordinates: `info.makingsense:spark-sas7bdat_2.13:4.0.0`  
+On `main` the version is **`4.0.0-SNAPSHOT`** (not published to Maven Central).  
 Spark format: `info.makingsense.sas.spark`
 
 ## Prerequisites
@@ -20,14 +20,14 @@ On Windows, put `-Dspark.version=…` **before** `++2.13.17`.
 
 | Artifact | Command | Output | Use when |
 |----------|---------|--------|----------|
-| **Thin** | `package` / `publishM2` | `spark-sas7bdat-4.0.0-s_2.13.jar` (~50 KB) | Maven / sbt (Parso via POM) |
-| **Fat** | `assembly` | `spark-sas7bdat-4.0.0-s_2.13-assembly.jar` (~6 MB) | PySpark / `--jars` |
+| **Thin** | `package` / `publishM2` | `spark-sas7bdat-4.0.0-SNAPSHOT-s_2.13.jar` (~50 KB) | Maven / sbt (Parso via POM) |
+| **Fat** | `assembly` | `spark-sas7bdat-4.0.0-SNAPSHOT-s_2.13-assembly.jar` (~6 MB) | PySpark / `--jars` |
 
 ```bash
 sbt -Dspark.version=4.1.2 ++2.13.17 clean test package publishM2
 sbt -Dspark.version=4.1.2 ++2.13.17 assembly
 ```
 
-Installed at `~/.m2/repository/info/makingsense/spark-sas7bdat_2.13/4.0.0/`.
+Installed at `~/.m2/repository/info/makingsense/spark-sas7bdat_2.13/4.0.0-SNAPSHOT/`.
 
-Maven Central publish (GPG + namespace): [publish-maven.md](publish-maven.md).
+Maven Central: drop `-SNAPSHOT`, tag `v4.0.0`. See [publish-maven.md](publish-maven.md).

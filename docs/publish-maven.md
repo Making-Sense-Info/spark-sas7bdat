@@ -1,96 +1,108 @@
 # Publish to Maven Central (`info.makingsense`)
 
-One-time setup, then a short release command. CI does **not** publish — you do it locally (or from a protected release job later).
+Releases are done by **git tag** via GitHub Actions (`.github/workflows/release.yml`).  
+There is no Maven `pom.xml`: the published version is **`SparkVersions.Spark4LibraryVersion`** in `project/SparkVersions.scala`.
 
-Coordinates after a Spark 4 release:
+On `main` that is **`4.0.0-SNAPSHOT`**. Maven Central does **not** accept SNAPSHOT. CI on push/PR only runs `test` + `package`. **Publish happens only on tags** `vX.Y.Z` after SNAPSHOT is removed.
+
+Coordinates after release:
 
 ```
 groupId:    info.makingsense
 artifactId: spark-sas7bdat_2.13
-version:    4.0.0
+version:    4.0.0   # tag v4.0.0 — no SNAPSHOT
 ```
 
-Publishing the **thin** JAR only (`package` / `publishSigned`). The fat JAR (`assembly`) stays a local/PySpark artifact.
+Thin JAR only. Fat JAR (`assembly`) stays local / PySpark.
 
 ---
 
-## 1. Claim the namespace (once)
+## One-time setup
 
-1. Create an account on the [Central Portal](https://central.sonatype.com/).
-2. **View Namespaces** → **Claim namespace** → `info.makingsense`.
-3. Prove you own **makingsense.info** (TXT DNS record or the verification file Sonatype shows). Wait until the namespace is **Verified**.
-4. **Generate User Token** (username + password). Store them as env vars, never in git:
+### 1. Namespace
 
-```bash
-export SONATYPE_USERNAME="..."   # token username
-export SONATYPE_PASSWORD="..."   # token password
-```
+1. Account on [Central Portal](https://central.sonatype.com/).
+2. Claim namespace **`info.makingsense`** (prove **makingsense.info** via DNS TXT).
+3. Wait until **Verified**. Generate a **User Token**.
 
-`build.sbt` already uses `sonatypeProfileName := "info.makingsense"` and `sonatypeCentralHost`.
-
----
-
-## 2. GPG signing key (once)
-
-Maven Central requires signed artifacts (`sbt-pgp` is already in `project/plugins.sbt`).
+### 2. GPG key
 
 ```bash
-gpg --full-generate-key          # RSA 4096, your name + Making Sense email
+gpg --full-generate-key
 gpg --list-secret-keys --keyid-format LONG
 gpg --keyserver keyserver.ubuntu.com --send-keys YOUR_KEY_ID
+gpg --armor --export-secret-keys YOUR_KEY_ID
 ```
 
-Optional: export the passphrase for sbt (otherwise it will prompt):
+Keep the armored private key and the passphrase.
 
-```bash
-export PGP_PASSPHRASE="..."
-```
+### 3. GitHub secrets
 
-If sbt cannot find gpg: `export PGP_TTY=$(tty)` or configure `~/.sbt/gpg.sbt`.
+Repo **Settings → Secrets and variables → Actions**:
+
+| Secret | Value |
+|--------|--------|
+| `SONATYPE_USERNAME` | Central Portal token username |
+| `SONATYPE_PASSWORD` | Central Portal token password |
+| `PGP_SECRET` | ASCII-armored private key (`-----BEGIN PGP PRIVATE KEY BLOCK-----` …) |
+| `PGP_PASSPHRASE` | Passphrase of that key |
 
 ---
 
-## 3. sbt credentials (once)
+## Release (tag)
 
-Create `~/.sbt/1.0/sonatype.sbt` (outside the repo):
+`git push origin v4.0.0` is correct (**keep the `v`**). `git push origin 4.0.0` would not trigger this workflow.
+
+1. On `main`, development version is SNAPSHOT:
 
 ```scala
-credentials += Credentials(
-  "Sonatype Nexus Repository Manager",
-  "central.sonatype.com",
-  sys.env.getOrElse("SONATYPE_USERNAME", ""),
-  sys.env.getOrElse("SONATYPE_PASSWORD", "")
-)
+// project/SparkVersions.scala
+val Spark4LibraryVersion = "4.0.0-SNAPSHOT"
 ```
+
+2. When ready, **drop SNAPSHOT**, commit:
+
+```scala
+val Spark4LibraryVersion = "4.0.0"
+```
+
+3. Create the tag **locally**, then push **that tag**:
+
+```bash
+git tag v4.0.0
+git push origin v4.0.0
+```
+
+If you only `git push origin v4.0.0` without `git tag` first, git looks for a ref that does not exist yet.
+
+4. The **Release** workflow then:
+   - fails if the sbt version still contains `SNAPSHOT`
+   - fails if the tag is not `v` + `Spark4LibraryVersion`
+   - runs Spark 4.1.2 tests
+   - `publishSigned` + `sonatypeBundleRelease` (thin JAR + sources + javadoc + signatures)
+   - creates a GitHub Release and attaches the thin JAR
+
+5. After Central is live, bump development to the next SNAPSHOT (`4.0.1-SNAPSHOT`) so `main` never republishes `4.0.0`.
 
 ---
 
-## 4. Release Spark 4.0.0
+## Local fallback (optional)
 
-JDK **17** (not 25). On macOS Homebrew:
+Only if you need to publish from a laptop. JDK **17**. Same env vars as the secrets:
 
 ```bash
 export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
 export PATH="$JAVA_HOME/bin:$PATH"
-```
+export SONATYPE_USERNAME="..."
+export SONATYPE_PASSWORD="..."
+export PGP_PASSPHRASE="..."
 
-From the repo root:
-
-```bash
 sbt -Dspark.version=4.1.2 ++2.13.17 clean test
 sbt -Dspark.version=4.1.2 ++2.13.17 publishSigned
 sbt sonatypeBundleRelease
 ```
 
-`publishSigned` writes a staging bundle (JAR + sources + javadoc + `.asc` + POM).  
-`sonatypeBundleRelease` uploads it to Central Portal and releases it.
-
-Check:
-
-- Portal: [https://central.sonatype.com/publishing](https://central.sonatype.com/publishing)
-- After ~10–30 min: [Maven Central](https://search.maven.org/artifact/info.makingsense/spark-sas7bdat_2.13/4.0.0/jar)
-
-Dry-run without uploading:
+Dry-run (no upload):
 
 ```bash
 sbt -Dspark.version=4.1.2 ++2.13.17 publishM2
@@ -99,28 +111,7 @@ ls ~/.m2/repository/info/makingsense/spark-sas7bdat_2.13/4.0.0/
 
 ---
 
-## 5. Checklist before `publishSigned`
-
-Central rejects incomplete POMs. This repo already sets:
-
-| POM field | `build.sbt` |
-|-----------|-------------|
-| `groupId` | `organization := "info.makingsense"` |
-| `licenses` | Apache-2.0 |
-| `url` / `scm` | `https://github.com/Making-Sense-Info/spark-sas7bdat` |
-| `developers` | Making Sense |
-| `description` | Spark SAS data source |
-| no extra repos | `pomIncludeRepository := { _ => false }` |
-
-Also required: **GPG signature**, **sources JAR**, **javadoc JAR** (sbt publishes them by default with `publishSigned`).
-
-Do **not** publish a SNAPSHOT. Do **not** reuse a version that already exists on Central.
-
----
-
-## 6. After it is live
-
-Client apps:
+## After it is live
 
 ```xml
 <dependency>
@@ -129,8 +120,6 @@ Client apps:
     <version>4.0.0</version>
 </dependency>
 ```
-
-Spark format (breaking vs upstream):
 
 ```java
 spark.read().format("info.makingsense.sas.spark").load(path);
@@ -142,8 +131,8 @@ spark.read().format("info.makingsense.sas.spark").load(path);
 
 | Symptom | Fix |
 |---------|-----|
-| Namespace not verified | DNS TXT for `makingsense.info` not propagated yet |
-| `401` / `403` on upload | Token expired or wrong host — use `central.sonatype.com` |
-| Missing javadoc / sources | `sbt publishSigned` must include `packageDoc` / `packageSrc` (default) |
-| `gpg: skipped: unusable` | Key has no secret key, or `PGP_PASSPHRASE` wrong |
-| Version already exists | Bump version — Central is immutable |
+| Tag / sbt version mismatch | Tag must be `v` + `Spark4LibraryVersion` |
+| Namespace not verified | DNS TXT for `makingsense.info` |
+| `401` / `403` | Token or `SONATYPE_*` secrets |
+| `gpg: skipped: unusable` | `PGP_SECRET` / `PGP_PASSPHRASE` |
+| Version already exists | Bump `Spark4LibraryVersion`, new tag |

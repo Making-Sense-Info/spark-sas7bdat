@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,21 +15,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas.spark
+package info.makingsense.sas.spark
 
 import java.io.IOException
 
 import com.epam.parso.ColumnFormat
 import com.epam.parso.impl.SasFileReaderImpl
-import com.github.saurfang.sas.mapreduce.SasInputFormat
-import com.github.saurfang.sas.parso.ParsoWrapper
+import info.makingsense.sas.mapreduce.SasInputFormat
+import info.makingsense.sas.parso.ParsoWrapper
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.NullWritable
 import org.apache.hadoop.io.compress.CompressionCodecFactory
 import org.apache.log4j.LogManager
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.execution.datasources.CodecStreams
 import org.apache.spark.sql.{Row, SQLContext}
 import org.apache.spark.sql.sources.{BaseRelation, TableScan}
 import org.apache.spark.sql.types._
@@ -73,7 +73,7 @@ case class SasRelation protected[spark](
     metadataTimeout = metadataTimeout
   )
 
-  override def buildScan: RDD[Row] = {
+  override def buildScan(): RDD[Row] = {
 
     // Start from the hadoopConfiguration in sparkContext.
     val conf: Configuration = new Configuration(sqlContext.sparkContext.hadoopConfiguration)

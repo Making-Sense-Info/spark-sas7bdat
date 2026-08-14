@@ -1,0 +1,88 @@
+# Publish thin JAR to Maven Central on tags vX.Y.Z.
+# Version source of truth: SparkVersions.Spark4LibraryVersion (sbt, not a pom).
+# Tag must match that version, e.g. v4.0.0.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish Spark 4 thin JAR
+    runs-on: ubuntu-latest
+    if: github.repository == 'Making-Sense-Info/spark-sas7bdat'
+    env:
+      SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+      SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+      PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: sbt
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.PGP_SECRET }}
+          passphrase: ${{ secrets.PGP_PASSPHRASE }}
+
+      - name: Check tag matches sbt version
+        run: |
+          set -euo pipefail
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [[ ! "$TAG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag must be vX.Y.Z without SNAPSHOT (got ${GITHUB_REF_NAME})"
+            exit 1
+          fi
+          LIB_VERSION=$(sbt -batch -Dsbt.supershell=false -Dspark.version=4.1.2 ++2.13.17 -error "print version" | tail -n1 | tr -d '[:space:]')
+          echo "tag=${TAG_VERSION} sbt=${LIB_VERSION}"
+          if [[ "$LIB_VERSION" == *SNAPSHOT* ]]; then
+            echo "Spark4LibraryVersion is still ${LIB_VERSION}."
+            echo "Set it to ${TAG_VERSION} (drop -SNAPSHOT), commit, then tag v${TAG_VERSION}."
+            exit 1
+          fi
+          if [ "$TAG_VERSION" != "$LIB_VERSION" ]; then
+            echo "Tag v${TAG_VERSION} does not match Spark4LibraryVersion (${LIB_VERSION})."
+            echo "Set Spark4LibraryVersion to ${TAG_VERSION}, commit, then tag v${TAG_VERSION}."
+            exit 1
+          fi
+          echo "LIB_VERSION=${LIB_VERSION}" >> "$GITHUB_ENV"
+
+      - name: Test
+        run: |
+          export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.test)"
+          sbt -batch -Dspark.version=4.1.2 ++2.13.17 test
+
+      - name: Publish to Maven Central
+        run: |
+          export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.compile)"
+          sbt -batch -Dspark.version=4.1.2 ++2.13.17 publishSigned
+          sbt -batch sonatypeBundleRelease
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: target/scala-2.13/spark-sas7bdat-${{ env.LIB_VERSION }}-s_2.13.jar

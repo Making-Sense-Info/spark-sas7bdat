@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,24 +15,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas
+package info.makingsense.sas
 
-import com.github.saurfang.sas.mapreduce.SasInputFormat
+import info.makingsense.sas.mapreduce.SasInputFormat
 import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.spark.TestSqlContext
 import org.apache.hadoop.io.NullWritable
 import org.apache.log4j.LogManager
 import org.apache.spark.SharedSparkContext
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SQLContext
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class SasInputFormatSpec extends FlatSpec with Matchers with SharedSparkContext {
+class SasInputFormatSpec extends AnyFlatSpec with Matchers with SharedSparkContext {
 
   @transient lazy val log = LogManager.getLogger(this.getClass.getName)
 
   "SASInputFormat" should "read correct number of records" in {
 
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = TestSqlContext(sc)
 
     // Set configs to cause multiple partitions/splits.
     val conf = sqlContext.sparkContext.hadoopConfiguration

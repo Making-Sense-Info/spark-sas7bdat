@@ -1,0 +1,9 @@
+spark-sas7bdat
+Copyright 2015 Forest Fang
+Copyright 2026 Making Sense
+
+This product is a derivative work of spark-sas7bdat
+(https://github.com/saurfang/spark-sas7bdat) by Forest Fang,
+licensed under the Apache License, Version 2.0.
+
+This product includes software developed by EPAM Systems (Parso).

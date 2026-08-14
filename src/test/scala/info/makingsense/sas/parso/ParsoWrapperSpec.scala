@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,11 +15,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas.parso
+package info.makingsense.sas.parso
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ParsoWrapperSpec extends FlatSpec with Matchers {
+class ParsoWrapperSpec extends AnyFlatSpec with Matchers {
 
   "ParsoWrapper" should "create SasFileParserWrapper" in {
 

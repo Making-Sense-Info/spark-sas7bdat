@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,7 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas
+package info.makingsense.sas
 
 import org.apache.spark.sql.{DataFrame, DataFrameReader, SQLContext}
 
@@ -34,7 +35,7 @@ package object spark {
     * Adds a method, `sas`, to DataFrameReader that allows you to read sas files.
     */
   implicit class SasDataFrameReader(reader: DataFrameReader) {
-    def sas: String => DataFrame = reader.format("com.github.saurfang.sas.spark").load
+    def sas: String => DataFrame = reader.format("info.makingsense.sas.spark").load
   }
 
 }

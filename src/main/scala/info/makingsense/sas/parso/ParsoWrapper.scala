@@ -1,4 +1,5 @@
 // Copyright (C) 2018 Forest Fang.
+// Modified 2026 by Making Sense.
 // See the LICENCE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -14,14 +15,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.github.saurfang.sas.parso
+package info.makingsense.sas.parso
 
 import java.io.InputStream
 import java.util
 
 import com.epam.parso.SasFileProperties
 import com.epam.parso.impl.{DateTimeConstants, SasFileConstants, SasFileParser}
-import com.github.saurfang.sas.util.PrivateMethodExposer
+import info.makingsense.sas.util.PrivateMethodExposer
 
 /**
   * An object to expose private methods from com.epam.parso.impl.SasFileParser and com.epam.parso.impl.SasFileConstants.

@@ -1,4 +1,4 @@
-# Publish to Maven Central (`info.makingsense`)
+# Publish to Maven Central (`info.making-sense`)
 
 Releases are done by **git tag** via GitHub Actions (`.github/workflows/release.yml`).  
 There is no Maven `pom.xml`: the published version is **`SparkVersions.Spark4LibraryVersion`** in `project/SparkVersions.scala`.
@@ -8,10 +8,12 @@ On `main` that is **`4.0.0-SNAPSHOT`**. Maven Central does **not** accept SNAPSH
 Coordinates after release:
 
 ```
-groupId:    info.makingsense
+groupId:    info.making-sense
 artifactId: spark-sas7bdat_2.13
 version:    4.0.0   # tag v4.0.0 — no SNAPSHOT
 ```
+
+Spark format / Scala packages stay **`info.makingsense.sas.spark`** (no hyphen — invalid in Java packages). Only the Maven `groupId` uses `info.making-sense`.
 
 Thin JAR only. Fat JAR (`assembly`) stays local / PySpark.
 
@@ -22,7 +24,7 @@ Thin JAR only. Fat JAR (`assembly`) stays local / PySpark.
 ### 1. Namespace
 
 1. Account on [Central Portal](https://central.sonatype.com/).
-2. Claim namespace **`info.makingsense`** (prove **makingsense.info** via DNS TXT).
+2. Claim namespace **`info.making-sense`** (prove ownership of the domain used for that claim, typically **making-sense.info**, via DNS TXT).
 3. Wait until **Verified**. Generate a **User Token**.
 
 ### 2. GPG key
@@ -106,7 +108,7 @@ Dry-run (no upload):
 
 ```bash
 sbt -Dspark.version=4.1.2 ++2.13.17 publishM2
-ls ~/.m2/repository/info/makingsense/spark-sas7bdat_2.13/4.0.0/
+ls ~/.m2/repository/info/making-sense/spark-sas7bdat_2.13/4.0.0/
 ```
 
 ---
@@ -115,7 +117,7 @@ ls ~/.m2/repository/info/makingsense/spark-sas7bdat_2.13/4.0.0/
 
 ```xml
 <dependency>
-    <groupId>info.makingsense</groupId>
+    <groupId>info.making-sense</groupId>
     <artifactId>spark-sas7bdat_2.13</artifactId>
     <version>4.0.0</version>
 </dependency>
@@ -132,7 +134,7 @@ spark.read().format("info.makingsense.sas.spark").load(path);
 | Symptom | Fix |
 |---------|-----|
 | Tag / sbt version mismatch | Tag must be `v` + `Spark4LibraryVersion` |
-| Namespace not verified | DNS TXT for `makingsense.info` |
+| Namespace not verified | DNS TXT for the domain linked to namespace `info.making-sense` |
 | `401` / `403` | Token or `SONATYPE_*` secrets |
 | `gpg: skipped: unusable` | `PGP_SECRET` / `PGP_PASSPHRASE` |
 | Version already exists | Bump `Spark4LibraryVersion`, new tag |

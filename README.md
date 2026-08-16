@@ -14,17 +14,18 @@ This is a **Making Sense** fork of [saurfang/spark-sas7bdat](https://github.com/
 
 ## Download:
 
-Maven coordinates for this fork (`groupId` **info.makingsense**). Spark data source format: **`info.makingsense.sas.spark`**.
+Maven coordinates for this fork (`groupId` **info.making-sense**).  
+Spark data source format (Java package, no hyphen): **`info.makingsense.sas.spark`**.
 
 ```scala
 // For sbt — Spark 4.1.x
-libraryDependencies += "info.makingsense" %% "spark-sas7bdat" % "4.0.0"
+libraryDependencies += "info.making-sense" %% "spark-sas7bdat" % "4.0.0"
 ```
 
 ```xml
 <!-- For Maven — Spark 4.1.x -->
 <dependency>
-    <groupId>info.makingsense</groupId>
+    <groupId>info.making-sense</groupId>
     <artifactId>spark-sas7bdat_2.13</artifactId>
     <version>4.0.0</version>
 </dependency>
@@ -184,7 +185,7 @@ cluster, you can always run it in local mode and take advantage of multi-core.
 ### Spark Shell
 
 ```bash
-spark-shell --master local[4] --packages info.makingsense:spark-sas7bdat_2.13:4.0.0
+spark-shell --master local[4] --packages info.making-sense:spark-sas7bdat_2.13:4.0.0
 ```
 
 ## Caveats

@@ -1,14 +1,14 @@
 import xerial.sbt.Sonatype.sonatypeCentralHost
 
 name := "spark-sas7bdat"
-organization := "info.makingsense"
+organization := "info.making-sense"
 description := "Spark data source for reading SAS sas7bdat files"
 licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
 // Maven Central (Central Portal) publishing settings
 ThisBuild / sonatypeCredentialHost := sonatypeCentralHost
 ThisBuild / publishTo := sonatypePublishToBundle.value
-ThisBuild / sonatypeProfileName := "info.makingsense"
+ThisBuild / sonatypeProfileName := "info.making-sense"
 
 homepage := Some(url("https://github.com/Making-Sense-Info/spark-sas7bdat"))
 scmInfo := Some(

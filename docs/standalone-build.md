@@ -28,6 +28,6 @@ sbt -Dspark.version=4.1.2 ++2.13.17 clean test package publishM2
 sbt -Dspark.version=4.1.2 ++2.13.17 assembly
 ```
 
-Installed at `~/.m2/repository/info/makingsense/spark-sas7bdat_2.13/4.0.0-SNAPSHOT/`.
+Installed at `~/.m2/repository/info/making-sense/spark-sas7bdat_2.13/4.0.0-SNAPSHOT/`.
 
 Maven Central: drop `-SNAPSHOT`, tag `v4.0.0`. See [publish-maven.md](publish-maven.md).

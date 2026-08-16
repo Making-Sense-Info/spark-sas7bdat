@@ -199,10 +199,8 @@ spark-shell --master local[4] --packages info.making-sense:spark-sas7bdat_2.13:4
 - [sas7bdat format](http://www2.uaem.mx/r-mirror/web/packages/sas7bdat/vignettes/sas7bdat.pdf)
 - [ReadStat](https://github.com/WizardMac/ReadStat)
 
-## Attribution
 ## Attribution / license
 
-This project is a derivative work of [spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat) by Forest Fang, licensed under the [Apache License 2.0](LICENSE). Original copyright notices are retained in the source files.
 This project is a **derivative work** of [spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat) by **Forest Fang** (@saurfang) and contributors, licensed under the [Apache License 2.0](LICENSE).
 
 In accordance with Apache License 2.0 §4:

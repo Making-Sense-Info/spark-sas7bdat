@@ -2,8 +2,29 @@ spark-sas7bdat
 Copyright 2015 Forest Fang
 Copyright 2026 Making Sense
 
-This product is a derivative work of spark-sas7bdat
-(https://github.com/saurfang/spark-sas7bdat) by Forest Fang,
-licensed under the Apache License, Version 2.0.
+This product is a derivative work based on spark-sas7bdat
+(https://github.com/saurfang/spark-sas7bdat) by Forest Fang and contributors,
+originally licensed under the Apache License, Version 2.0.
 
-This product includes software developed by EPAM Systems (Parso).
+Original project:
+  Author: Forest Fang (@saurfang)
+  Repository: https://github.com/saurfang/spark-sas7bdat
+  License: Apache License, Version 2.0
+    https://www.apache.org/licenses/LICENSE-2.0
+
+This distribution retains original copyright and license notices in source
+files. Modifications by Making Sense (2026) include Spark 4.1.x support,
+Maven coordinates under groupId info.making-sense, Scala packages under
+info.makingsense, build/CI updates, and documentation changes.
+
+This product is not affiliated with, endorsed by, or sponsored by Forest Fang
+or the original saurfang/spark-sas7bdat project.
+
+---
+
+Third-party software included or used at runtime:
+
+Parso (com.epam:parso)
+  Copyright EPAM Systems
+  https://github.com/epam/parso
+  Used to parse SAS sas7bdat files. See that project's license terms.

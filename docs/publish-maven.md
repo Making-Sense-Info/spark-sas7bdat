@@ -3,7 +3,7 @@
 Releases are done by **git tag** via GitHub Actions (`.github/workflows/release.yml`).  
 There is no Maven `pom.xml`: the published version is **`SparkVersions.Spark4LibraryVersion`** in `project/SparkVersions.scala`.
 
-On `main` that is **`4.0.0-SNAPSHOT`**. Maven Central does **not** accept SNAPSHOT. CI on push/PR only runs `test` + `package`. **Publish happens only on tags** `vX.Y.Z` after SNAPSHOT is removed.
+On a release commit that is **`4.0.0`** (no SNAPSHOT). CI on push/PR only runs `test` + `package`. **Publish happens only on tags** `vX.Y.Z`.
 
 Coordinates after release:
 

@@ -41,10 +41,35 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.PGP_SECRET }}
-          passphrase: ${{ secrets.PGP_PASSPHRASE }}
+        env:
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PGP_SECRET:-}" ]; then
+            echo "Secret PGP_SECRET is empty"
+            exit 1
+          fi
+          # Prefer base64-encoded secret (survives GitHub secret newline stripping).
+          # Fallback: armored ASCII if it already starts with BEGIN.
+          KEYFILE=$(mktemp)
+          if printf '%s' "$PGP_SECRET" | grep -q 'BEGIN PGP'; then
+            printf '%s\n' "$PGP_SECRET" > "$KEYFILE"
+          else
+            printf '%s' "$PGP_SECRET" | base64 --decode > "$KEYFILE"
+          fi
+          if ! grep -q 'BEGIN PGP' "$KEYFILE"; then
+            echo "PGP_SECRET is not a valid armored key (and base64 decode failed)."
+            echo "Set PGP_SECRET to: gpg --armor --export-secret-keys KEYID | base64"
+            exit 1
+          fi
+          gpg --batch --import "$KEYFILE"
+          rm -f "$KEYFILE"
+          gpg --list-secret-keys --keyid-format LONG
+          # sbt-pgp looks up a signing key; pin the first secret key if needed
+          KEY_ID=$(gpg --list-secret-keys --keyid-format LONG | awk '/^sec/{print $2; exit}' | cut -d/ -f2)
+          echo "Using signing key: ${KEY_ID}"
+          echo "PGP_KEY_ID=${KEY_ID}" >> "$GITHUB_ENV"
 
       - name: Check tag matches sbt version
         run: |
@@ -75,8 +100,14 @@ jobs:
           sbt -batch -Dspark.version=4.1.2 ++2.13.17 test
 
       - name: Publish to Maven Central
+        env:
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
         run: |
           export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.compile)"
+          # Non-interactive signing for CI (sbt-pgp uses PGP_PASSPHRASE from env via build.sbt)
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           sbt -batch -Dspark.version=4.1.2 ++2.13.17 publishSigned
           sbt -batch sonatypeBundleRelease
 

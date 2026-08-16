@@ -30,13 +30,21 @@ Thin JAR only. Fat JAR (`assembly`) stays local / PySpark.
 ### 2. GPG key
 
 ```bash
-gpg --full-generate-key
+gpg --full-generate-key          # (1) RSA, 4096, no expiry
 gpg --list-secret-keys --keyid-format LONG
 gpg --keyserver keyserver.ubuntu.com --send-keys YOUR_KEY_ID
-gpg --armor --export-secret-keys YOUR_KEY_ID
 ```
 
-Keep the armored private key and the passphrase.
+Export for GitHub Actions as **base64** (recommended — avoids “Misformed armored text”):
+
+```bash
+gpg --armor --export-secret-keys YOUR_KEY_ID | base64 | pbcopy
+```
+
+Paste that into the repo secret `PGP_SECRET`.  
+`PGP_PASSPHRASE` = the key passphrase.
+
+Armored text also works if you paste the full block including newlines (`BEGIN PGP PRIVATE KEY BLOCK` … `END`).
 
 ### 3. GitHub secrets
 
@@ -46,7 +54,7 @@ Repo **Settings → Secrets and variables → Actions**:
 |--------|--------|
 | `SONATYPE_USERNAME` | Central Portal token username |
 | `SONATYPE_PASSWORD` | Central Portal token password |
-| `PGP_SECRET` | ASCII-armored private key (`-----BEGIN PGP PRIVATE KEY BLOCK-----` …) |
+| `PGP_SECRET` | Prefer **base64** of armored private key: `gpg --armor --export-secret-keys KEYID \| base64` |
 | `PGP_PASSPHRASE` | Passphrase of that key |
 
 ---
@@ -136,5 +144,5 @@ spark.read().format("info.makingsense.sas.spark").load(path);
 | Tag / sbt version mismatch | Tag must be `v` + `Spark4LibraryVersion` |
 | Namespace not verified | DNS TXT for the domain linked to namespace `info.making-sense` |
 | `401` / `403` | Token or `SONATYPE_*` secrets |
-| `gpg: skipped: unusable` | `PGP_SECRET` / `PGP_PASSPHRASE` |
+| `gpg: skipped` / Misformed armored text | Re-set `PGP_SECRET` as base64 (`gpg --armor --export-secret-keys KEYID \| base64`) |
 | Version already exists | Bump `Spark4LibraryVersion`, new tag |

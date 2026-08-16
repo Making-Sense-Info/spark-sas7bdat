@@ -2,7 +2,7 @@
 
 A library for reading SAS data (.sas7bdat) with [Spark](http://spark.apache.org/).
 
-This is a **Making Sense** fork of [saurfang/spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat), with Spark **4.1.x** support.
+This is an independent **Making Sense** fork of [saurfang/spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat) (Apache License 2.0), with Spark **4.1.x** support. It is not affiliated with or endorsed by the original author.
 
 [![CI](https://github.com/Making-Sense-Info/spark-sas7bdat/actions/workflows/ci.yml/badge.svg)](https://github.com/Making-Sense-Info/spark-sas7bdat/actions/workflows/ci.yml)
 
@@ -200,7 +200,21 @@ spark-shell --master local[4] --packages info.making-sense:spark-sas7bdat_2.13:4
 - [ReadStat](https://github.com/WizardMac/ReadStat)
 
 ## Attribution
+## Attribution / license
 
 This project is a derivative work of [spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat) by Forest Fang, licensed under the [Apache License 2.0](LICENSE). Original copyright notices are retained in the source files.
+This project is a **derivative work** of [spark-sas7bdat](https://github.com/saurfang/spark-sas7bdat) by **Forest Fang** (@saurfang) and contributors, licensed under the [Apache License 2.0](LICENSE).
+
+In accordance with Apache License 2.0 §4:
+
+- A copy of the Apache License 2.0 is included as [`LICENSE`](LICENSE).
+- Attribution and copyright notices are in [`NOTICE`](NOTICE) and in source file headers (original Forest Fang copyright retained; Making Sense modifications noted).
+- This fork changes Maven `groupId` to `info.making-sense`, Scala packages / Spark format to `info.makingsense.sas.spark`, and adds Spark 4.1.x support and related build/docs updates.
+
+This project is **not** affiliated with, endorsed by, or sponsored by Forest Fang or the upstream repository.
+
+Redistribution of this software (including Maven Central artifacts) must continue to include the License and retain applicable notices as required by Apache License 2.0.
+
+See also [`docs/license-compliance.md`](docs/license-compliance.md).
 
 

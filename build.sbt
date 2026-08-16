@@ -147,3 +147,11 @@ Compile / packageBin / mappings ++= Seq(
   file("LICENSE") -> "LICENSE",
   file("NOTICE") -> "NOTICE"
 )
+Compile / packageSrc / mappings ++= Seq(
+  file("LICENSE") -> "LICENSE",
+  file("NOTICE") -> "NOTICE"
+)
+Compile / packageDoc / mappings ++= Seq(
+  file("LICENSE") -> "LICENSE",
+  file("NOTICE") -> "NOTICE"
+)

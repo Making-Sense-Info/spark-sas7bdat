@@ -54,7 +54,8 @@ jobs:
             echo "Tag must be vX.Y.Z without SNAPSHOT (got ${GITHUB_REF_NAME})"
             exit 1
           fi
-          LIB_VERSION=$(sbt -batch -Dsbt.supershell=false -Dspark.version=4.1.2 ++2.13.17 -error "print version" | tail -n1 | tr -d '[:space:]')
+          # Read version from source of truth (avoid sbt stdout noise on CI).
+          LIB_VERSION=$(sed -n 's/.*val Spark4LibraryVersion *= *"\([^"]*\)".*/\1/p' project/SparkVersions.scala | head -n1)
           echo "tag=${TAG_VERSION} sbt=${LIB_VERSION}"
           if [[ "$LIB_VERSION" == *SNAPSHOT* ]]; then
             echo "Spark4LibraryVersion is still ${LIB_VERSION}."

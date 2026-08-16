@@ -85,16 +85,18 @@ jobs:
         if: matrix.spark == '4.1.2'
         run: |
           set -euo pipefail
-          LIB_VERSION=$(sbt -batch -Dsbt.supershell=false -Dspark.version=4.1.2 ++2.13.17 -error "print version" | tail -n1 | tr -d '[:space:]')
-          JAR="target/scala-2.13/spark-sas7bdat-${LIB_VERSION}-s_2.13.jar"
-          if [ ! -f "$JAR" ]; then
-            echo "Expected JAR not found: $JAR"
+          # Thin JAR only (exclude assembly / sources / javadoc). Avoid re-invoking sbt for version.
+          JAR=$(find target/scala-2.13 -maxdepth 1 -type f -name 'spark-sas7bdat-*-s_2.13.jar' \
+            ! -name '*-assembly.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' | head -n1)
+          if [ -z "${JAR}" ] || [ ! -f "${JAR}" ]; then
+            echo "Expected thin JAR not found under target/scala-2.13/"
             find target -name 'spark-sas7bdat*.jar' -type f 2>/dev/null || true
             exit 1
           fi
-          jar tf "$JAR" | grep -q 'info/makingsense/sas/spark/DefaultSource.class'
-          SIZE=$(stat -c%s "$JAR")
-          if [ "$SIZE" -gt 500000 ]; then
-            echo "JAR looks too large ($SIZE bytes) — may be javadoc instead of classes"
+          echo "Checking JAR: ${JAR}"
+          jar tf "${JAR}" | grep -q 'info/makingsense/sas/spark/DefaultSource.class'
+          SIZE=$(stat -c%s "${JAR}")
+          if [ "${SIZE}" -gt 500000 ]; then
+            echo "JAR looks too large (${SIZE} bytes) — may be javadoc instead of classes"
             exit 1
           fi

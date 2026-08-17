@@ -2,17 +2,17 @@
  * Spark / Scala version matrix for cross-builds.
  *
  * Legacy line (library 3.0.0): Spark 2.4 / 3.0 / 3.5 — Java 8 bytecode.
- * Spark 4 line (library 4.0.0): Spark 4.1+ on Scala 2.13.17 — Java 17 bytecode.
+ * Spark 4 line (library 4.0.1): Spark 4.1+ on Scala 2.13.17 — Java 17 bytecode.
  *
- * Release: this value must match the git tag without the "v" (tag v4.0.0 → "4.0.0").
- * After Central is live, bump to the next SNAPSHOT (e.g. 4.0.1-SNAPSHOT) on main.
+ * Release: this value must match the git tag without the "v" (tag v4.0.1 → "4.0.1").
+ * After Central is live, bump to the next SNAPSHOT (e.g. 4.0.2-SNAPSHOT) on main.
  *
  * Build Spark 4: sbt -Dspark.version=4.1.2 ++2.13.17 compile
  */
 object SparkVersions {
 
   val LegacyLibraryVersion = "3.0.0"
-  val Spark4LibraryVersion = "4.0.0"
+  val Spark4LibraryVersion = "4.0.1"
 
   val Spark24 = "2.4.6"
   val Spark30 = "3.0.0"

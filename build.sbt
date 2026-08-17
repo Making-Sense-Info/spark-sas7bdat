@@ -21,7 +21,7 @@ developers := List(
   Developer(
     id = "Making-Sense-Info",
     name = "Making Sense",
-    email = "",
+    email = "contact@making-sense.info",
     url = url("https://github.com/Making-Sense-Info")
   )
 )
@@ -106,6 +106,7 @@ addCommandAlias(
 assembly / test := {}
 // Fat JAR for PySpark / spark-submit --jars (includes Parso; Spark remains Provided).
 // Thin JAR from `package` / Maven publish keeps the default name without -assembly.
+// Central also publishes this JAR with classifier "assembly" (same GAV as the thin JAR).
 assembly / assemblyJarName :=
   s"${name.value}-${version.value}-s_${scalaBinaryVersion.value}-assembly.jar"
 assembly / assemblyMergeStrategy := {
@@ -114,6 +115,8 @@ assembly / assemblyMergeStrategy := {
   case PathList("META-INF", "MANIFEST.MF")       => MergeStrategy.discard
   case x                                          => (assembly / assemblyMergeStrategy).value(x)
 }
+assembly / artifact := (assembly / artifact).value.withClassifier(Some("assembly"))
+addArtifact(assembly / artifact, assembly)
 
 artifactName := { (sv: ScalaVersion, module: ModuleID, art: Artifact) =>
   val base = s"${name.value}-${module.revision}-s_${sv.binary}"

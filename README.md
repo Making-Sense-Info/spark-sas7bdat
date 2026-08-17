@@ -9,7 +9,7 @@ This is an independent **Making Sense** fork of [saurfang/spark-sas7bdat](https:
 ## Requirements:
 
 - [Spark 2.4.x, 3.0.x, 3.5.x, or 4.1.x](https://spark.apache.org/downloads.html) (see Scala/Spark version mapping below)
-- Spark 4.x requires **Java 17+** and **Scala 2.13.17** (library version **4.0.0**, built/tested against **Spark 4.1.2**)
+- Spark 4.x requires **Java 17+** and **Scala 2.13.17** (library version **4.0.1**, built/tested against **Spark 4.1.2**)
 - [Parso 2.0.14](https://mvnrepository.com/artifact/com.epam/parso/2.0.14)
 
 ## Download:
@@ -19,7 +19,7 @@ Spark data source format (Java package, no hyphen): **`info.makingsense.sas.spar
 
 ```scala
 // For sbt — Spark 4.1.x
-libraryDependencies += "info.making-sense" %% "spark-sas7bdat" % "4.0.0"
+libraryDependencies += "info.making-sense" %% "spark-sas7bdat" % "4.0.1"
 ```
 
 ```xml
@@ -27,7 +27,7 @@ libraryDependencies += "info.making-sense" %% "spark-sas7bdat" % "4.0.0"
 <dependency>
     <groupId>info.making-sense</groupId>
     <artifactId>spark-sas7bdat_2.13</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
 </dependency>
 ```
 
@@ -36,43 +36,12 @@ libraryDependencies += "info.making-sense" %% "spark-sas7bdat" % "4.0.0"
 | 2.11.x        | 2.4.x         | 3.0.0           | spark-sas7bdat_2.11 |
 | 2.12.x        | 3.0.x         | 3.0.0           | spark-sas7bdat_2.12 |
 | 2.13.x        | 3.5.x         | 3.0.0           | spark-sas7bdat_2.13 |
-| 2.13.17       | 4.1.2+        | **4.0.0**       | spark-sas7bdat_2.13 |
+| 2.13.17       | 4.1.2+        | **4.0.1**       | spark-sas7bdat_2.13 |
 
-Use **3.0.0** on Spark 3.5 clusters and **4.0.0** on Spark 4.1+ clusters (same artifact name, different library release). Build with `-Dspark.version=4.1.2` (or your cluster's 4.1.x patch version).
+Use **3.0.0** on Spark 3.5 clusters and **4.0.1** on Spark 4.1+ clusters (same artifact name, different library release). Build with `-Dspark.version=4.1.2` (or your cluster's 4.1.x patch version).
 
-Publish to Maven Central by tagging **`v4.0.0`**: **[docs/publish-maven.md](docs/publish-maven.md)**.  
-Local build / `publishM2`: **[docs/standalone-build.md](docs/standalone-build.md)**.
-
-### Build JARs from source (thin vs fat)
-
-Two artifacts — pick the one that matches how you run Spark:
-
-| Artifact | Command | Output | Use when |
-|----------|---------|--------|----------|
-| **Thin** | `package` | `spark-sas7bdat-*-s_2.13.jar` (~50 KB) | Maven / sbt (`publishM2`), `--packages` (Parso via POM) |
-| **Fat** | `assembly` | `spark-sas7bdat-*-s_2.13-assembly.jar` (~6 MB) | PySpark, `spark-submit --jars` (Parso bundled) |
-
-Spark (`spark-core`, `spark-sql`) is not included in either JAR.
-
-**Spark 4.1.x** (library **4.0.0**):
-
-```bash
-# Thin JAR (Maven / publishM2)
-sbt -Dspark.version=4.1.2 ++2.13.17 package
-
-# Fat JAR (PySpark / --jars)
-sbt -Dspark.version=4.1.2 ++2.13.17 assembly
-# → target/scala-2.13/spark-sas7bdat-4.0.0-s_2.13-assembly.jar
-```
-
-**Legacy line** (library **3.0.0**, e.g. Spark 3.5):
-
-```bash
-sbt ++2.13.12 package      # thin
-sbt ++2.13.12 assembly     # fat
-```
-
-CI runs `package` (thin JAR) only — no `assembly`.
+Central publishes a **thin** JAR (default, Parso via POM) and a **fat** JAR (`classifier=assembly`, Parso bundled). Pick the right one: **[docs/thin-vs-fat.md](docs/thin-vs-fat.md)**.  
+Publish: **[docs/publish-maven.md](docs/publish-maven.md)**. Local build: **[docs/standalone-build.md](docs/standalone-build.md)**.
 
 ## Features:
 
@@ -152,6 +121,8 @@ df = spark.read.format("info.makingsense.sas.spark").load("cars.sas7bdat", force
 df.write.csv("newcars.csv", header=True)
 ```
 
+For `spark.jars` vs `spark.jars.packages` (thin vs fat, Windows paths), see **[docs/thin-vs-fat.md](docs/thin-vs-fat.md)**.
+
 ### R API
 
 ```r
@@ -184,7 +155,7 @@ cluster, you can always run it in local mode and take advantage of multi-core.
 ### Spark Shell
 
 ```bash
-spark-shell --master local[4] --packages info.making-sense:spark-sas7bdat_2.13:4.0.0
+spark-shell --master local[4] --packages info.making-sense:spark-sas7bdat_2.13:4.0.1
 ```
 
 ## Caveats

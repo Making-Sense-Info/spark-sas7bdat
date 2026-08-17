@@ -1,3 +1,8 @@
+## 4.0.1
+
+- **Added**: Maven Central publishes the **fat** JAR with classifier `assembly` (Parso bundled) next to the thin JAR. Use it for PySpark / `spark.jars` / `--jars`; do not wget the thin artifact alone.
+- **Docs**: user guide for thin vs fat — [`docs/thin-vs-fat.md`](docs/thin-vs-fat.md).
+
 ## 4.0.0
 
 - **Fork**: published by Making Sense as `info.making-sense:spark-sas7bdat_2.13:4.0.0`. Spark format is now `info.makingsense.sas.spark`. Apache 2.0 attribution to Forest Fang / upstream retained (`LICENSE`, `NOTICE`, source headers).

@@ -1,6 +1,6 @@
-# Publish thin JAR to Maven Central on tags vX.Y.Z.
+# Publish thin + fat (classifier assembly) JARs to Maven Central on tags vX.Y.Z.
 # Version source of truth: SparkVersions.Spark4LibraryVersion (sbt, not a pom).
-# Tag must match that version, e.g. v4.0.0.
+# Tag must match that version, e.g. v4.0.1.
 
 name: Release
 
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish Spark 4 thin JAR
+    name: Publish Spark 4 thin + fat JARs
     runs-on: ubuntu-latest
     if: github.repository == 'Making-Sense-Info/spark-sas7bdat'
     env:
@@ -99,17 +99,42 @@ jobs:
           export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.test)"
           sbt -batch -Dspark.version=4.1.2 ++2.13.17 test
 
+      - name: Build fat JAR (PySpark)
+        run: |
+          export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.compile)"
+          sbt -batch -Dspark.version=4.1.2 ++2.13.17 assembly
+
+      - name: Verify fat JAR bundles Parso
+        run: |
+          set -euo pipefail
+          JAR="target/scala-2.13/spark-sas7bdat-${LIB_VERSION}-s_2.13-assembly.jar"
+          if [ ! -f "$JAR" ]; then
+            echo "Fat JAR not found: $JAR"
+            find target -name '*assembly*.jar' -type f 2>/dev/null || true
+            exit 1
+          fi
+          jar tf "$JAR" | grep -q 'com/epam/parso/impl/SasFileReaderImpl.class'
+          echo "Parso present in $JAR"
+
       - name: Publish to Maven Central
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: |
+          set -euo pipefail
+          if [ -z "${SONATYPE_USERNAME:-}" ] || [ -z "${SONATYPE_PASSWORD:-}" ]; then
+            echo "SONATYPE_USERNAME / SONATYPE_PASSWORD secrets are empty."
+            echo "Create a User Token at https://central.sonatype.com/account and set both secrets."
+            exit 1
+          fi
           export SBT_OPTS="$(tr '\n' ' ' < travis/jvmopts.compile)"
-          # Non-interactive signing for CI (sbt-pgp uses PGP_PASSPHRASE from env via build.sbt)
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-          sbt -batch -Dspark.version=4.1.2 ++2.13.17 publishSigned
-          sbt -batch sonatypeBundleRelease
+          # Same sbt session: keep Spark 4 version + staging bundle consistent
+          sbt -batch -Dspark.version=4.1.2 ++2.13.17 \
+            "publishSigned; sonatypeBundleRelease"
 
       - name: GitHub Release
         uses: softprops/action-gh-release@v2
@@ -117,4 +142,6 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           generate_release_notes: true
-          files: target/scala-2.13/spark-sas7bdat-${{ env.LIB_VERSION }}-s_2.13.jar
+          files: |
+            target/scala-2.13/spark-sas7bdat-${{ env.LIB_VERSION }}-s_2.13.jar
+            target/scala-2.13/spark-sas7bdat-${{ env.LIB_VERSION }}-s_2.13-assembly.jar

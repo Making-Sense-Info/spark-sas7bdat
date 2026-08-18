@@ -1,3 +1,7 @@
+## Unreleased (4.1.0-SNAPSHOT)
+
+Development on `master` after **4.0.1**.
+
 ## 4.0.1
 
 - **Added**: Maven Central publishes the **fat** JAR with classifier `assembly` (Parso bundled) next to the thin JAR. Use it for PySpark / `spark.jars` / `--jars`; do not wget the thin artifact alone.

@@ -2,10 +2,10 @@
 
 Maven Central publishes **both** artifacts under the same coordinates
 `info.making-sense:spark-sas7bdat_2.13:4.0.1`. Spark (`spark-core`, `spark-sql`)
-is never bundled.
+is never bundled. **4.0.0** on Central is thin-only; use **4.0.1+** for the fat JAR.
 
 | | **Thin** (default) | **Fat** (`classifier=assembly`) |
-|--|--------------------|----------------------------------|
+|---|--------------------|----------------------------------|
 | File on Central | `spark-sas7bdat_2.13-4.0.1.jar` (~50 KB) | `spark-sas7bdat_2.13-4.0.1-assembly.jar` |
 | Parso | resolved from the POM | bundled inside the JAR |
 | Use | sbt / Maven / Gradle, `spark.jars.packages`, `spark-submit --packages` | `spark.jars`, `spark-submit --jars`, air-gapped PySpark |
@@ -54,9 +54,9 @@ spark = SparkSession.builder \
 On Windows, use `Path.as_posix()` or `C:/...` in `spark.jars`. Backslashes can
 break comma-separated JAR lists.
 
-GitHub Releases attach the same fat JAR (local name
-`spark-sas7bdat-4.0.1-s_2.13-assembly.jar`). You can also build it with
-`sbt assembly` — see [standalone-build.md](standalone-build.md).
+[GitHub Releases](https://github.com/Making-Sense-Info/spark-sas7bdat/releases)
+attach the same fat JAR (local name `spark-sas7bdat-4.0.1-s_2.13-assembly.jar`).
+You can also build it with `sbt assembly` — see [standalone-build.md](standalone-build.md).
 
 ## Air-gapped / two JARs
 

@@ -3,9 +3,11 @@
 Releases are done by **git tag** via GitHub Actions (`.github/workflows/release.yml`).  
 There is no Maven `pom.xml`: the published version is **`SparkVersions.Spark4LibraryVersion`** in `project/SparkVersions.scala`.
 
-On a release commit that is **`4.0.1`** (no SNAPSHOT). CI on push/PR only runs `test` + `package`. **Publish happens only on tags** `vX.Y.Z`.
+On `master`, development is **`4.1.0-SNAPSHOT`**. CI on push/PR only runs `test` + `package`. **Publish happens only on tags** `vX.Y.Z` (no SNAPSHOT).
 
-Coordinates after release:
+Last Central release: **4.0.1**. Next tag: **`v4.1.0`** after dropping SNAPSHOT.
+
+Coordinates of the last release:
 
 ```
 groupId:    info.making-sense
@@ -13,7 +15,7 @@ artifactId: spark-sas7bdat_2.13
 version:    4.0.1   # tag v4.0.1 — no SNAPSHOT
 ```
 
-Published files:
+Published files (4.0.1):
 
 - **Thin** (default): `spark-sas7bdat_2.13-4.0.1.jar` + POM + sources + javadoc
 - **Fat** (classifier `assembly`): `spark-sas7bdat_2.13-4.0.1-assembly.jar` (Parso bundled)
@@ -71,29 +73,29 @@ A `401` on upload almost always means these two secrets are wrong or still empty
 
 ## Release (tag)
 
-`git push origin v4.0.1` is correct (**keep the `v`**). `git push origin 4.0.1` would not trigger this workflow.
+`git push origin v4.1.0` is correct (**keep the `v`**). `git push origin 4.1.0` would not trigger this workflow.
 
-1. On `main`, development version is SNAPSHOT:
+1. On `master`, development version is SNAPSHOT:
 
 ```scala
 // project/SparkVersions.scala
-val Spark4LibraryVersion = "4.0.1-SNAPSHOT"
+val Spark4LibraryVersion = "4.1.0-SNAPSHOT"
 ```
 
 2. When ready, **drop SNAPSHOT**, commit:
 
 ```scala
-val Spark4LibraryVersion = "4.0.1"
+val Spark4LibraryVersion = "4.1.0"
 ```
 
 3. Create the tag **locally**, then push **that tag**:
 
 ```bash
-git tag v4.0.1
-git push origin v4.0.1
+git tag v4.1.0
+git push origin v4.1.0
 ```
 
-If you only `git push origin v4.0.1` without `git tag` first, git looks for a ref that does not exist yet.
+If you only `git push origin v4.1.0` without `git tag` first, git looks for a ref that does not exist yet.
 
 4. The **Release** workflow then:
    - fails if the sbt version still contains `SNAPSHOT`
@@ -103,7 +105,7 @@ If you only `git push origin v4.0.1` without `git tag` first, git looks for a re
    - `publishSigned` + `sonatypeBundleRelease` (thin + assembly + sources + javadoc + signatures)
    - creates a GitHub Release and attaches thin + fat JARs
 
-5. After Central is live, bump development to the next SNAPSHOT (`4.0.2-SNAPSHOT`) so `main` never republishes `4.0.1`.
+5. After Central is live, bump development to the next SNAPSHOT so `master` never republishes `4.1.0`.
 
 ---
 
@@ -128,8 +130,8 @@ Dry-run (no upload):
 
 ```bash
 sbt -Dspark.version=4.1.2 ++2.13.17 publishM2
-ls ~/.m2/repository/info/making-sense/spark-sas7bdat_2.13/4.0.1/
-# expect …-4.0.1.jar and …-4.0.1-assembly.jar
+ls ~/.m2/repository/info/making-sense/spark-sas7bdat_2.13/4.1.0-SNAPSHOT/
+# expect …-4.1.0-SNAPSHOT.jar and …-4.1.0-SNAPSHOT-assembly.jar
 ```
 
 ---
